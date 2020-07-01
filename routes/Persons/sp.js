@@ -1,10 +1,12 @@
 const express = require('express'),
     router = express.Router(),
-    Sho = require('../models/Sho');
+    Sp = require('../../models/Sp');
+
+// Endpoint : '/sp/'
 
 
 router.post('/register', (req, res) => {
-    var sho = new Sho({
+    var sp = new Sp({
         first_name: req.body.first_name,
         last_name: req.body.last_name,
         email: req.body.email,
@@ -13,11 +15,11 @@ router.post('/register', (req, res) => {
         phone: req.body.phone
     });
 
-    sho.save((err, sho) => {
+    sp.save((err, sp) => {
         if (err) {
             res.send({ status: 'error', msg: err });
         } else {
-            res.send({ status: 'success', sho: sho });
+            res.send({ status: 'success', user: sp });
         }
     });
 });
@@ -32,14 +34,14 @@ router.post('/login', (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
 
-    Sho.findOne({ email: email })
-        .then((sho) => {
-            if (!sho || sho.length == 0) {
+    Sp.findOne({ email: email })
+        .then((sp) => {
+            if (!sp || sp.length == 0) {
                 res.send({ status: 'error', msg: 'NOUSER' });
             } else {
-                if (sho.password === password) {
-                    sho.password = 'encrypted-text';
-                    res.send({ status: 'success', sho: sho });
+                if (sp.password === password) {
+                    sp.password = 'encrypted-text';
+                    res.send({ status: 'success', user: sp });
                 } else {
                     res.send({ status: 'error', msg: 'INVPASS' });
                 }

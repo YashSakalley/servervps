@@ -7,8 +7,10 @@ var express = require('express'),
 var firRouter = require('./routes/fir'),
     indexRouter = require('./routes/index'),
     verifyRouter = require('./routes/verify'),
-    userRouter = require('./routes/user'),
-    shoRouter = require('./routes/sho');
+    userRouter = require('./routes/Persons/user'),
+    shoRouter = require('./routes/Persons/sho'),
+    ioRouter = require('./routes/Persons/io'),
+    spRouter = require('./routes/Persons/sp');
 
 const app = express(),
     PORT = process.env.PORT || 5000;
@@ -30,9 +32,14 @@ mongoose.connect("mongodb://localhost/vps", { useNewUrlParser: true, useUnifiedT
 
 app.use('/firs', firRouter);
 app.use('/verify', verifyRouter);
+
+// Persons Router
 app.use('/user', userRouter);
 app.use('/sho', shoRouter);
+app.use('/sp', spRouter);
+app.use('/io', ioRouter);
 
+// Index Router
 app.use('/', indexRouter);
 
 

@@ -1,7 +1,7 @@
 var express = require('express'),
     router = express.Router(),
-    Aadhaar = require('../models/Aadhaar'),
-    User = require('../models/User');
+    Aadhaar = require('../../models/Aadhaar'),
+    User = require('../../models/User');
 
 // Endpoint : '/user/'
 
