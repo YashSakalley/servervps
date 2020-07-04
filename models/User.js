@@ -8,10 +8,10 @@ let UserSchema = new mongoose.Schema({
     father_name: String,
     phone: String,
     email: String,
-    firs: [
+    reports: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'FIR'
+            ref: 'Report'
         }
     ]
 });

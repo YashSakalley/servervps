@@ -1,41 +1,55 @@
-var express = require('express'),
+const express = require('express'),
     router = express.Router(),
-    FIR = require('../models/Fir'),
-    User = require('../models/User');
+    Fir = require('../models/Fir'),
+    pdf = require('html-pdf');
+
+const pdfTemplate = require('../document')
 
 // Endpoint : '/firs/'
 
-
-// CREATE
+// Create FIR
 router.post('/', (req, res) => {
-    var firBody = new FIR({
-        crime: req.body.crime,
-        answers: req.body.answers,
-        questions: req.body.questions,
-        user_id: req.body.user_id,
-        media_files: req.body.media_files,
-        signature: req.body.signature,
-        status: 'Pending'
-    });
+    var sender = {
+        name: 'Yash Sakalley',
+        father_name: 'Arun Sakalley',
+        address: '59, Bijli Colony, Bhopal',
+        phone: '7974961262',
+        email: 'yashsakalley98@gmail.com',
+        id_proof: 'https://www.drupal.org/files/project-images/idproof.png'
+    }
 
-    firBody.save()
-        .then((fir) => {
-            User.findById(firBody.user_id, (err, user) => {
-                user.firs.push(fir._id);
-                user.save();
-                res.send({ status: 'success', fir: firBody });
-            });
-        })
-        .catch((err) => {
-            console.log('Error saving FIR');
-            res.send({ status: 'error', msg: 'err' });
-        });
+    var reciever = {
+        name: 'Tony Stark',
+        role: 'Station Head Officer',
+        address: 'Anand Nagar'
+    }
 
-});
+    var info = {
+        sub: 'Theft in hostel in Indrapuri, Bhopal',
+        place: 'Indrapuri',
+        time: '2:30 PM, 04 July 2020',
+        crime: 'Theft',
+        property: 'Television, Cricket Bat',
+        description_of_accussed: 'Tall, black hair, mark on forehead',
+        witness_details: 'No witness',
+        complaint: 'Theft occurred in Indrapuri where 2 thiefs took the red bus and fled'
+    }
+
+    var firId = '9err4648fvcmkidf';
+
+    pdf.create(pdfTemplate(sender, reciever, info), {}).toFile(`document/saved/${firId}.pdf`, (err) => {
+        if (err) {
+            console.log(err);
+            res.send(Promise.reject());
+            return
+        }
+        res.send(`PDF Created ${firId}`);
+    })
+})
 
 // READ
 router.get('/', (req, res) => {
-    FIR.find({})
+    Fir.find({})
         .then((firs) => {
             res.send({ status: 'success', firs: firs });
         })
@@ -45,7 +59,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    FIR.findById(req.params.id)
+    Fir.findById(req.params.id)
         .then((fir) => {
             res.send({ status: 'success', fir: fir });
         })
@@ -64,7 +78,7 @@ router.get('/user/:userId', (req, res) => {
         .then((user) => {
             firs = user.firs;
             var promises = firs.map(async (fir) => {
-                const results = await FIR.findById(fir)
+                const results = await fir.findById(fir)
                     .then((fir) => {
                         return fir;
                     })
@@ -86,7 +100,7 @@ router.get('/user/:userId', (req, res) => {
 });
 
 router.get('/status/:status', (req, res) => {
-    FIR.find({ status: req.params.status })
+    Fir.find({ status: req.params.status })
         .then((firs) => {
             res.send({ status: 'success', firs: firs });
         })
@@ -104,7 +118,4 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
     res.send('Deleted for id', req.params.id);
 });
-
-
-
 module.exports = router;
