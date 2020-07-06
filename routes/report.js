@@ -53,7 +53,13 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     Report.findById(req.params.id)
         .then((report) => {
-            res.send({ status: 'success', report: report });
+            User.findById(report.user_id)
+                .then((user) => {
+                    res.send({ status: 'success', report: report, user: user });
+                })
+                .catch((error) => {
+                    res.send({ status: 'error', msg: error });
+                })
         })
         .catch((error) => {
             res.send({ status: 'error', msg: error });

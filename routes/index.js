@@ -1,13 +1,41 @@
 var express = require('express'),
     router = express.Router(),
+    multer = require('multer'),
     Aadhaar = require('../models/Aadhaar');
 
 // Endpoint : '/'
 
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+})
+
+var upload = multer({ storage: storage }).array('file')
 
 router.get('/', (req, res) => {
     res.send('I am Inevitable');
 });
+
+router.post('/upload', (req, res) => {
+    upload(req, res, function (err) {
+
+        if (err) console.log(err);
+
+        if (err instanceof multer.MulterError) {
+            return res.status(500).json(err)
+        } else if (err) {
+            return res.status(500).json(err)
+        }
+
+        console.log('File uploaded');
+        return res.status(200).send(req.file)
+
+    })
+})
 
 router.get('/questions/:crime', (req, res) => {
     console.log('Request for questions for crime: ' + req.params.crime);

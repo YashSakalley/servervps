@@ -1,0 +1,17 @@
+The idea is to reduce the use of paper using digitizing the process of filing of a form.
+To do this we develop a mobile/web application which allows the user to fill up a form by entering the details for the
+text fields provided.
+The system then converts it into simple text (or JSON) format which will then be converted into a QR Code.
+After generation of this QR Code, the code can simply be shown at the counter where it will be scanned using a
+camera device.
+Upon scanning, the computer will get all the required information from the user and can then manipulate it accordingly.
+
+Technology Stack for development:
+Android Studio
+
+Designing Workflow:
+Start Android Studio
+Make the project
+
+Tasks to complete:
+Learn Android Studio
