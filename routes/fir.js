@@ -9,41 +9,16 @@ const pdfTemplate = require('../document')
 
 // Create FIR
 router.post('/', (req, res) => {
-    var sender = {
-        name: 'Yash Sakalley',
-        father_name: 'Arun Sakalley',
-        address: '59, Bijli Colony, Bhopal',
-        phone: '7974961262',
-        email: 'yashsakalley98@gmail.com',
-        id_proof: 'https://www.drupal.org/files/project-images/idproof.png'
-    }
+    const { sender, reciever, info, report_id } = req.body
 
-    var reciever = {
-        name: 'Tony Stark',
-        role: 'Station Head Officer',
-        address: 'Anand Nagar'
-    }
-
-    var info = {
-        sub: 'Theft in hostel in Indrapuri, Bhopal',
-        place: 'Indrapuri',
-        time: '2:30 PM, 04 July 2020',
-        crime: 'Theft',
-        property: 'Television, Cricket Bat',
-        description_of_accussed: 'Tall, black hair, mark on forehead',
-        witness_details: 'No witness',
-        complaint: 'Theft occurred in Indrapuri where 2 thiefs took the red bus and fled'
-    }
-
-    var firId = '9err4648fvcmkidf';
-
-    pdf.create(pdfTemplate(sender, reciever, info), {}).toFile(`document/saved/${firId}.pdf`, (err) => {
+    pdf.create(pdfTemplate(sender, reciever, info), {}).toFile(`document/saved/${report_id}.pdf`, (err) => {
         if (err) {
             console.log(err);
             res.send(Promise.reject());
             return
         }
-        res.send(`PDF Created ${firId}`);
+        console.log('PDF generated');
+        res.send({ status: 'success' });
     })
 })
 

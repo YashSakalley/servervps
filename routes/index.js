@@ -7,32 +7,33 @@ var express = require('express'),
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'public')
+        cb(null, 'document/uploads')
     },
     filename: function (req, file, cb) {
         cb(null, Date.now() + '-' + file.originalname)
     }
 })
 
-var upload = multer({ storage: storage }).array('file')
+var upload = multer({ storage: storage }).single('file')
 
 router.get('/', (req, res) => {
-    res.send('I am Inevitable');
+    res.send('I am Inevitable. And I .. am .... Iron Man 😎');
 });
 
-router.post('/upload', (req, res) => {
+router.post('/upload/', (req, res) => {
+    console.log(req.body);
+
     upload(req, res, function (err) {
-
-        if (err) console.log(err);
-
         if (err instanceof multer.MulterError) {
+            console.log(err);
             return res.status(500).json(err)
         } else if (err) {
+            console.log(err);
             return res.status(500).json(err)
         }
+        console.log('file uploaded', req.file);
 
-        console.log('File uploaded');
-        return res.status(200).send(req.file)
+        return res.status(200).send({ status: 'success', file: req.file })
 
     })
 })
@@ -41,20 +42,39 @@ router.get('/questions/:crime', (req, res) => {
     console.log('Request for questions for crime: ' + req.params.crime);
     var questions = [
         {
-            question: 'Do you recognise the individual involved',
-            suggestions: ['No', 'Yes', 'Don\'t remember']
+            label: 'sub',
+            question: 'Please enter subject for your report. (Eg. Theft in Titan Store, Bhopal)',
+            suggestions: []
         },
         {
-            question: 'How many were involved',
-            suggestions: ['Only 1', '0', 'Don\'t remember']
+            label: 'place',
+            question: 'Enter place of crime',
+            suggestions: []
         },
         {
-            question: 'What kind of weapons used, if any?',
-            suggestions: ['Knife', 'Gun', 'Don\'t remember']
+            label: 'time',
+            question: 'Enter time and date of incident (MM:SS AM/PM, DD MMMM YYYY)',
+            suggestions: []
         },
         {
-            question: 'When and where',
-            suggestions: ['Don\'t know']
+            label: 'property',
+            question: 'Was there any property damaged or stolen',
+            suggestions: ['No']
+        },
+        {
+            label: 'description_of_accussed',
+            question: 'What did the accussed look like in his/her appearance',
+            suggestions: ['Don\'t remember', 'Prefer not to say']
+        },
+        {
+            label: 'witness_details',
+            question: 'Were there any witness for the crime',
+            suggestions: ['Don\'t remember', 'Prefer not to say']
+        },
+        {
+            label: 'complaint',
+            question: 'Please give a breif summary of your complaint in 20-30 words',
+            suggestions: []
         }
     ]
     res.send({ status: 'success', questions: questions });

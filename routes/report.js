@@ -109,7 +109,14 @@ router.get('/status/:status', (req, res) => {
 
 // UPDATE
 router.put('/:id', (req, res) => {
-    res.send('Updated for id', req.params.id);
+    Report.findByIdAndUpdate(req.params.id, { status: req.body.status }, (err, report) => {
+        if (err) {
+            res.send({ status: 'error', msg: 'DB error' })
+            console.log(err)
+            return;
+        }
+        res.send({ status: 'success', report: report });
+    });
 });
 
 // DELETE

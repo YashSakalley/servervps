@@ -22,7 +22,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Mongoose setup
-mongoose.connect("mongodb://localhost/vps", { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect("mongodb://localhost/vps",
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false
+    })
     .then((data) => {
         console.log("DB connected successfully");
     })

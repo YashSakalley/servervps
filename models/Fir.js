@@ -5,6 +5,10 @@ let FirSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    report_id: {
+        type: String,
+        required: true
+    },
     answers: [String],
     questions: [String],
     user_id: {
