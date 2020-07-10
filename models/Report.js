@@ -20,6 +20,9 @@ let ReportSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    reason: {
+        type: String
+    },
     time: {
         type: Date,
         default: Date.now

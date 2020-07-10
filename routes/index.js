@@ -1,7 +1,9 @@
 var express = require('express'),
     router = express.Router(),
+    path = require('path'),
     multer = require('multer'),
-    Aadhaar = require('../models/Aadhaar');
+    Aadhaar = require('../models/Aadhaar'),
+    pdf = require('html-pdf');
 
 // Endpoint : '/'
 
@@ -100,4 +102,21 @@ router.post('/addAadhaarData', (req, res) => {
     });
 });
 
+const pdfTemplate = require('../document/testTemplate')
+
+// Development Only - Create PDF
+router.post('/devPdf', (req, res) => {
+
+    let signature = 'Signature.jpeg';
+    pdf.create(pdfTemplate(signature), {
+        base: 'file://' + path.resolve('./public') + '/'
+    }).toFile(`document/saved/test.pdf`, (err) => {
+        if (err) {
+            console.log(err)
+            res.send('error')
+        } else {
+            res.send('success')
+        }
+    })
+})
 module.exports = router;

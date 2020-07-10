@@ -3,15 +3,18 @@ const express = require('express'),
     Fir = require('../models/Fir'),
     pdf = require('html-pdf');
 
-const pdfTemplate = require('../document')
+const pdfTemplate = require('../document/index')
 
 // Endpoint : '/firs/'
 
 // Create FIR
 router.post('/', (req, res) => {
     const { sender, reciever, info, report_id } = req.body
-
-    pdf.create(pdfTemplate(sender, reciever, info), {}).toFile(`document/saved/${report_id}.pdf`, (err) => {
+    const signature = {
+        sender_sign: 'sample_sender.png',
+        reciever_sign: 'sample_reciever.png'
+    }
+    pdf.create(pdfTemplate(sender, reciever, info, signature), {}).toFile(`document/saved/${report_id}.pdf`, (err) => {
         if (err) {
             console.log(err);
             res.send(Promise.reject());
