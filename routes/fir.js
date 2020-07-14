@@ -11,8 +11,8 @@ const pdfTemplate = require('../document/index')
 router.post('/', (req, res) => {
     const { sender, reciever, info, report_id } = req.body
     const signature = {
-        sender_sign: 'sample_sender.png',
-        reciever_sign: 'sample_reciever.png'
+        sender_sign: info.sender_sign,
+        reciever_sign: info.reciever_sign
     }
     pdf.create(pdfTemplate(sender, reciever, info, signature), {}).toFile(`document/saved/${report_id}.pdf`, (err) => {
         if (err) {

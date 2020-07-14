@@ -109,7 +109,6 @@ router.get('/status/:status', (req, res) => {
 
 // UPDATE
 router.put('/:id', (req, res) => {
-
     Report.findByIdAndUpdate(req.params.id, { status: req.body.status, reason: req.body.reason }, (err, report) => {
         if (err) {
             res.send({ status: 'error', msg: 'DB error' })

@@ -23,8 +23,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/upload/', (req, res) => {
-    console.log(req.body);
-
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             console.log(err);
