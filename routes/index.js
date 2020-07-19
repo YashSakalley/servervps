@@ -73,12 +73,18 @@ router.get('/questions/:crime', (req, res) => {
         },
         {
             label: 'complaint',
-            question: 'Please give a breif summary of your complaint in 20-30 words',
+            question: 'Please give a brief summary of your complaint in 20-30 words',
             suggestions: []
         }
     ]
     res.send({ status: 'success', questions: questions });
 });
+
+router.get('/getPdf/:id', (req, res) => {
+    let path = require('path').resolve(__dirname, '..', 'document', 'saved', req.params.id)
+    console.log(path)
+    res.sendFile(path + '.pdf')
+})
 
 // Development Only - Create Aadhaar Data
 router.post('/addAadhaarData', (req, res) => {
