@@ -19,7 +19,7 @@ router.post('/create', (req, res) => {
                 } else if (!aadhaarUser || aadhaarUser.length == 0) {
                     res.json({ status: 'error', msg: 'No user found in Aadhaar database' });
                 } else {
-                    console.log('UserFound', aadhaarUser);
+                    console.log('New User', aadhaarUser);
                     var newUser = new User({
                         first_name: aadhaarUser.first_name,
                         last_name: aadhaarUser.last_name,
@@ -30,7 +30,7 @@ router.post('/create', (req, res) => {
                         email: aadhaarUser.email
                     });
                     newUser.save();
-                    res.json({ status: 'success', user: user });
+                    res.json({ status: 'success', user: newUser });
                 }
             });
         } else {
