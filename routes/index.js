@@ -86,6 +86,12 @@ router.get('/getPdf/:id', (req, res) => {
     res.sendFile(path + '.pdf')
 })
 
+router.get('/getFile/:id', (req, res) => {
+    let path = require('path').resolve(__dirname, '..', 'document', 'uploads', req.params.id)
+    console.log(path)
+    res.sendFile(path)
+})
+
 // Development Only - Create Aadhaar Data
 router.post('/addAadhaarData', (req, res) => {
     var aadhaar = new Aadhaar({
