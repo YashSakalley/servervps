@@ -50,6 +50,50 @@ router.get('/', (req, res) => {
         });
 });
 
+router.get('/info/count', (req, res) => {
+    let approved = 0, pending = 0, rejected = 0;
+    let cb = 0, hp = 0, theft = 0, mur = 0, viol = 0, oth = 0;
+    Report.find({})
+        .then((reports) => {
+            reports.forEach(report => {
+
+                let status = report.status;
+                if (status.includes('Approved')) {
+                    approved += 1
+                } else if (status.includes('Rejected')) {
+                    rejected += 1
+                } else {
+                    pending += 1
+                }
+
+                let crime = report.crime;
+                if (crime === 'CYBER BULLYING') {
+                    cb += 1
+                } else if (crime === 'HACKING OR PHISHING') {
+                    hp += 1
+                } else if (crime === 'THEFT') {
+                    theft += 1
+                } else if (crime === 'MURDER') {
+                    mur += 1
+                } else if (crime === 'VIOLENCE') {
+                    viol += 1
+                } else if (crime === 'OTHER') {
+                    oth += 1
+                }
+
+            })
+            res.send({
+                status: 'success', count: {
+                    cb, hp, theft, mur, viol, oth, approved, rejected, pending
+                }
+            })
+        })
+        .catch((error) => {
+            console.log(error);
+            res.send({ status: 'error' })
+        })
+})
+
 router.get('/:id', (req, res) => {
     Report.findById(req.params.id)
         .then((report) => {
