@@ -92,6 +92,14 @@ router.get('/getFile/:id', (req, res) => {
     res.sendFile(path)
 })
 
+router.get('/getSuspectImg/:id/:num', (req, res) => {
+    console.log('rreee');
+    let num = req.params.num
+    let path = require('path').resolve(__dirname, '..', 'document', 'images', req.params.id, `Suspect-${num}.jpg`)
+    console.log(path)
+    res.sendFile(path)
+})
+
 // Development Only - Create Aadhaar Data
 router.post('/addAadhaarData', (req, res) => {
     var aadhaar = new Aadhaar({

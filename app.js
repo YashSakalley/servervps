@@ -11,7 +11,8 @@ var reportRouter = require('./routes/report'),
     shoRouter = require('./routes/Persons/sho'),
     ioRouter = require('./routes/Persons/io'),
     spRouter = require('./routes/Persons/sp'),
-    firRouter = require('./routes/fir');
+    firRouter = require('./routes/fir'),
+    analyseRouter = require('./routes/analyse');
 
 const app = express(),
     PORT = process.env.PORT || 5000;
@@ -39,6 +40,7 @@ mongoose.connect("mongodb://localhost/vps",
 app.use('/firs', firRouter);
 app.use('/reports', reportRouter);
 app.use('/verify', verifyRouter);
+app.use('/analyse', analyseRouter);
 
 // Persons Router
 app.use('/user', userRouter);

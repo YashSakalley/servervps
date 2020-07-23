@@ -40,6 +40,21 @@ router.post('/create', (req, res) => {
     });
 });
 
+router.post('/wihoutAadhaar', (req, res) => {
+    let newUser = new User({
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        uid: 'Not available',
+        address: 'Not available',
+        father_name: 'Not available',
+        phone: req.body.phone,
+        email: req.body.email,
+        reason: req.body.reason
+    })
+    newUser.save();
+    res.send({ status: 'success', user: newUser })
+});
+
 // READ
 // User's id in database is used as token
 router.post('/token', (req, res) => {

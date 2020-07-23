@@ -13,7 +13,8 @@ let UserSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Report'
         }
-    ]
+    ],
+    reason: String
 });
 
 module.exports = mongoose.model('User', UserSchema);
