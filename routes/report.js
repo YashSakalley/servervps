@@ -8,7 +8,7 @@ var express = require('express'),
 
 // CREATE
 router.post('/', (req, res) => {
-    const { crime, answers, questions, user_id, media_files, signature } = req.body;
+    const { crime, answers, questions, user_id, media_files, signature, image_id } = req.body;
     var reportBody = new Report({
         crime,
         answers,
@@ -16,6 +16,7 @@ router.post('/', (req, res) => {
         user_id,
         media_files,
         signature,
+        image_id,
         status: 'Pending'
     });
     console.log(reportBody);
