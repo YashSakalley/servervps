@@ -40,7 +40,7 @@ router.post('/create', (req, res) => {
     });
 });
 
-router.post('/wihoutAadhaar', (req, res) => {
+router.post('/withoutAadhaar', (req, res) => {
     let newUser = new User({
         first_name: req.body.first_name,
         last_name: req.body.last_name,
