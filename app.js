@@ -8,6 +8,7 @@ var reportRouter = require('./routes/report'),
     indexRouter = require('./routes/index'),
     verifyRouter = require('./routes/verify'),
     userRouter = require('./routes/Persons/user'),
+    voluteerRouter = require('./routes/Persons/volunteer'),
     shoRouter = require('./routes/Persons/sho'),
     ioRouter = require('./routes/Persons/io'),
     spRouter = require('./routes/Persons/sp'),
@@ -47,6 +48,7 @@ app.use('/user', userRouter);
 app.use('/sho', shoRouter);
 app.use('/sp', spRouter);
 app.use('/io', ioRouter);
+app.use('/volunteer', voluteerRouter);
 
 // Index Router
 app.use('/', indexRouter);

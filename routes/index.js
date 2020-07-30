@@ -63,7 +63,7 @@ router.get('/questions/:crime', (req, res) => {
         },
         {
             label: 'description_of_accussed',
-            question: 'What did the accussed look like in his/her appearance',
+            question: 'What did the accused look like in his/her appearance',
             suggestions: ['Don\'t remember', 'Prefer not to say']
         },
         {

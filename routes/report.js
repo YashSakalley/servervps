@@ -23,6 +23,10 @@ router.post('/', (req, res) => {
 
     reportBody.save()
         .then((report) => {
+            if (reportBody.user_id === 'Not Available') {
+                res.send({ status: 'success', report: reportBody });
+                return
+            }
             User.findById(reportBody.user_id)
                 .then((user) => {
                     user.reports.push(report._id);
@@ -168,7 +172,5 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
     res.send('Deleted for id', req.params.id);
 });
-
-
 
 module.exports = router;
