@@ -158,14 +158,22 @@ router.get('/status/:status', (req, res) => {
 });
 
 // UPDATE
-router.put('/live_work/:id', (req, res) => {
-    Report.findByIdAndUpdate(req.params.id, { work: req.body.work }, (err, report) => {
+router.put('/work/:id', (req, res) => {
+    console.log(req.body.work);
+    Report.findById(req.params.id, (err, report) => {
         if (err) {
             res.send({ status: 'error', msg: 'DB error' })
             console.log(err)
             return;
         }
-        res.send({ status: 'success', report: report });
+        report.work.push(req.body.work)
+        report.save()
+            .then(() => {
+                res.send({ status: 'success', report: report });
+            })
+            .catch(() => {
+                res.send({ status: 'error', msg: 'Saving error' })
+            })
     });
 })
 

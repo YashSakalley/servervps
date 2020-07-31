@@ -9,8 +9,10 @@ let ReportSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    current_status: [String],
-    work: String,
+    work: {
+        type: [String],
+        default: []
+    },
     answers: [String],
     questions: [String],
     user_id: {
