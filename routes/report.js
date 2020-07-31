@@ -17,7 +17,8 @@ router.post('/', (req, res) => {
         media_files,
         signature,
         image_id,
-        status: 'Pending'
+        status: 'Pending',
+        is_facilitator_filled: req.body.is_facilitator_filled ? true : false
     });
     console.log(reportBody);
 
@@ -157,6 +158,17 @@ router.get('/status/:status', (req, res) => {
 });
 
 // UPDATE
+router.put('/live_work/:id', (req, res) => {
+    Report.findByIdAndUpdate(req.params.id, { work: req.body.work }, (err, report) => {
+        if (err) {
+            res.send({ status: 'error', msg: 'DB error' })
+            console.log(err)
+            return;
+        }
+        res.send({ status: 'success', report: report });
+    });
+})
+
 router.put('/:id', (req, res) => {
     Report.findByIdAndUpdate(req.params.id, { status: req.body.status, reason: req.body.reason }, (err, report) => {
         if (err) {

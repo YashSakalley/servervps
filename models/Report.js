@@ -5,6 +5,12 @@ let ReportSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    is_facilitator_filled: {
+        type: Boolean,
+        default: false
+    },
+    current_status: [String],
+    work: String,
     answers: [String],
     questions: [String],
     user_id: {
