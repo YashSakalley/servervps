@@ -168,10 +168,12 @@ router.put('/work/:id', (req, res) => {
         }
         report.work.push(req.body.work)
         report.save()
-            .then(() => {
+            .then((res) => {
+                console.log('Saved work');
                 res.send({ status: 'success', report: report });
             })
-            .catch(() => {
+            .catch((err) => {
+                console.log(err);
                 res.send({ status: 'error', msg: 'Saving error' })
             })
     });

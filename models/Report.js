@@ -25,8 +25,7 @@ let ReportSchema = new mongoose.Schema({
         required: true
     },
     image_id: {
-        type: String,
-        required: true
+        type: String
     },
     status: {
         type: String,

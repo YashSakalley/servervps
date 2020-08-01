@@ -43,7 +43,7 @@ router.post('/create', (req, res) => {
 router.post('/withoutAadhaar', (req, res) => {
     let newUser = new User({
         first_name: req.body.first_name,
-        last_name: req.body.last_name,
+        last_name: '',
         uid: 'Not available',
         address: 'Not available',
         father_name: 'Not available',
