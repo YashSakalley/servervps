@@ -5,6 +5,8 @@ var express = require('express'),
     Aadhaar = require('../models/Aadhaar'),
     pdf = require('html-pdf');
 
+const exec = require('child_process').exec;
+
 // Endpoint : '/'
 
 var storage = multer.diskStorage({
@@ -98,6 +100,19 @@ router.get('/getSuspectImg/:id/:num', (req, res) => {
     let path = require('path').resolve(__dirname, '..', 'document', 'images', req.params.id, `Suspect-${num}.jpg`)
     console.log(path)
     res.sendFile(path)
+})
+
+router.post('/entity', (req, res) => {
+    let desc = req.body.desc
+    exec(`python EntityRecognition_spacy.py ${desc}`, (err, stdout, stderr) => {
+        if (err) {
+            console.log(err)
+            res.send({ status: 'error', msg: err });
+        } else {
+            res.send({ status: 'success', entity: stdout })
+            console.log('STDERR', stderr);
+        }
+    })
 })
 
 // Development Only - Create Aadhaar Data

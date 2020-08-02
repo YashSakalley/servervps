@@ -12,6 +12,7 @@ var reportRouter = require('./routes/report'),
     shoRouter = require('./routes/Persons/sho'),
     ioRouter = require('./routes/Persons/io'),
     spRouter = require('./routes/Persons/sp'),
+    legalRouter = require('./routes/Persons/legal'),
     firRouter = require('./routes/fir'),
     analyseRouter = require('./routes/analyse');
 
@@ -47,6 +48,7 @@ app.use('/analyse', analyseRouter);
 app.use('/user', userRouter);
 app.use('/sho', shoRouter);
 app.use('/sp', spRouter);
+app.use('/legal', legalRouter);
 app.use('/io', ioRouter);
 app.use('/volunteer', voluteerRouter);
 
