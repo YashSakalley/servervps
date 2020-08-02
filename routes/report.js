@@ -1,6 +1,9 @@
 var express = require('express'),
     router = express.Router(),
     Report = require('../models/Report'),
+    twilio = require('twilio'),
+    config = require('../config/otp_config'),
+    client = twilio(config.accountSID, config.authToken),
     User = require('../models/User');
 
 // Endpoint : '/reports/'
@@ -179,6 +182,17 @@ router.put('/work/:id', (req, res) => {
     });
 })
 
+router.put('/complete/:id', (req, res) => {
+    Report.findByIdAndUpdate(req.params.id, req.body, (err, report) => {
+        if (err) {
+            res.send({ status: 'error', msg: 'DB error' })
+            console.log(err)
+            return;
+        }
+        res.send({ status: 'success', report: report });
+    });
+})
+
 router.put('/:id', (req, res) => {
     Report.findByIdAndUpdate(req.params.id, { status: req.body.status, reason: req.body.reason }, (err, report) => {
         if (err) {
@@ -187,6 +201,26 @@ router.put('/:id', (req, res) => {
             return;
         }
         res.send({ status: 'success', report: report });
+        console.log(req.body.reason);
+        if (req.body.reason) {
+            // Send text message for rejected
+            client.messages
+                .create({
+                    body: `Your report has been rejected. Report id: ${report._id}, Reason: ${req.body.reason}. Please update the report details in order to proceed`,
+                    from: '+13015337570',
+                    to: '+917974961262'
+                })
+                .then(message => {
+                    console.log(message)
+                    console.log(message.sid)
+                })
+                .done((err) => {
+                    if (err)
+                        console.log(err);
+                    else
+                        console.log('SMS SENT FOR REJECTED');
+                });
+        }
     });
 });
 
