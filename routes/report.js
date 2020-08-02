@@ -6,6 +6,8 @@ var express = require('express'),
     client = twilio(config.accountSID, config.authToken),
     User = require('../models/User');
 
+const exec = require('child_process').exec;
+
 // Endpoint : '/reports/'
 
 
@@ -46,6 +48,15 @@ router.post('/', (req, res) => {
             res.send({ status: 'error', msg: 'Error saving REPORT' });
         });
 
+    exec(`mongodump -d vps -h localhost`, (err, stdout, stderr) => {
+        if (err) {
+            console.log('Error backup DB');
+            console.log(err)
+        } else {
+            console.log(stdout, stderr);
+            console.log('Backup Created');
+        }
+    })
 });
 
 // READ
