@@ -33,6 +33,7 @@ Error Codes:
 router.post('/login', (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
+    let image_id = req.body.image_id;
 
     Sp.findOne({ email: email })
         .then((sp) => {

@@ -172,7 +172,7 @@ router.get('/status/:status', (req, res) => {
 });
 
 // UPDATE
-router.put('/work/:id', (req, res) => {
+router.put('/work/:id/:vis', (req, res) => {
     console.log(req.body.work);
     Report.findById(req.params.id, (err, report) => {
         if (err) {
@@ -180,9 +180,14 @@ router.put('/work/:id', (req, res) => {
             console.log(err)
             return;
         }
-        report.work.push(req.body.work)
+
+        if (req.params.vis === 'public')
+            report.work.push(req.body.work)
+        else
+            report.private_work.push(req.body.work)
+
         report.save()
-            .then((res) => {
+            .then((response) => {
                 console.log('Saved work');
                 res.send({ status: 'success', report: report });
             })
@@ -191,6 +196,28 @@ router.put('/work/:id', (req, res) => {
                 res.send({ status: 'error', msg: 'Saving error' })
             })
     });
+})
+
+router.put('/show_work/:id', (req, res) => {
+    Report.findByIdAndUpdate(req.params.id, { is_work_shown: true }, (err, report) => {
+        if (err) {
+            res.send({ status: 'error', msg: 'DB error' })
+            console.log(err)
+            return;
+        }
+        res.send({ status: 'success', report: report });
+    })
+})
+
+router.put('/hide_work/:id', (req, res) => {
+    Report.findByIdAndUpdate(req.params.id, { is_work_shown: false }, (err, report) => {
+        if (err) {
+            res.send({ status: 'error', msg: 'DB error' })
+            console.log(err)
+            return;
+        }
+        res.send({ status: 'success', report: report });
+    })
 })
 
 router.put('/complete/:id', (req, res) => {

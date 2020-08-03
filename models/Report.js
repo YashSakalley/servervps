@@ -13,6 +13,14 @@ let ReportSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
+    private_work: {
+        type: [String],
+        default: []
+    },
+    is_work_shown: {
+        type: Boolean,
+        default: false
+    },
     answers: [String],
     questions: [String],
     user_id: {

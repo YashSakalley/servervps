@@ -12,7 +12,8 @@ let SpSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'FIR'
         }
-    ]
+    ],
+    id_proof: String
 });
 
 module.exports = mongoose.model('Sp', SpSchema);
