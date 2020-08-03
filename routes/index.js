@@ -115,6 +115,25 @@ router.post('/entity', (req, res) => {
     })
 })
 
+router.post('/ipc', (req, res) => {
+    let desc = req.body.desc
+    exec(`python law_detection.py ${desc}`, (err, stdout, stderr) => {
+        if (err) {
+            console.log(err)
+            res.send({ status: 'error', msg: err });
+        } else {
+            let out = stdout.split('\n')
+            let arr = []
+            out.forEach(o => {
+                arr.push(o.split(' '))
+            })
+            arr = arr.slice(0, arr.length - 2)
+            res.send({ status: 'success', entity: arr })
+            console.log('STDERR', stderr);
+        }
+    })
+})
+
 // Development Only - Create Aadhaar Data
 router.post('/addAadhaarData', (req, res) => {
     var aadhaar = new Aadhaar({

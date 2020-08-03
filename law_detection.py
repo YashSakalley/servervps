@@ -44,7 +44,7 @@ class detect():
         result = ''
         for i in l:
             temp = self.offence[i]
-            result += '{} under IPC Chapter {}, Section {} \n'.format(
+            result += '{} {} {} \n'.format(
                 i.upper(), temp[1], temp[0])
         return result
 

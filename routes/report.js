@@ -14,6 +14,7 @@ const exec = require('child_process').exec;
 // CREATE
 router.post('/', (req, res) => {
     const { crime, answers, questions, user_id, media_files, signature, image_id } = req.body;
+    console.log('IPC', req.body.ipc);
     var reportBody = new Report({
         crime,
         answers,
@@ -47,16 +48,6 @@ router.post('/', (req, res) => {
             console.log(err);
             res.send({ status: 'error', msg: 'Error saving REPORT' });
         });
-
-    exec(`mongodump -d vps -h localhost`, (err, stdout, stderr) => {
-        if (err) {
-            console.log('Error backup DB');
-            console.log(err)
-        } else {
-            console.log(stdout, stderr);
-            console.log('Backup Created');
-        }
-    })
 });
 
 // READ
