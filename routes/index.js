@@ -1,15 +1,15 @@
-var express = require('express'),
-    router = express.Router(),
-    path = require('path'),
-    multer = require('multer'),
-    Aadhaar = require('../models/Aadhaar'),
-    pdf = require('html-pdf');
+import { exec } from 'child_process';
+import { Router } from 'express';
+import { resolve } from 'path';
+import multer, { diskStorage, MulterError } from 'multer';
+import Aadhaar from '../models/Aadhaar';
+import { create } from 'html-pdf';
 
-const exec = require('child_process').exec;
+const router = Router();
 
 // Endpoint : '/'
 
-var storage = multer.diskStorage({
+const storage = diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'document/uploads')
     },
@@ -18,7 +18,7 @@ var storage = multer.diskStorage({
     }
 })
 
-var upload = multer({ storage: storage }).single('file')
+const upload = multer({ storage }).single('file')
 
 router.get('/', (req, res) => {
     res.send('I am Inevitable. And I .. am .... Iron Man 😎');
@@ -26,7 +26,7 @@ router.get('/', (req, res) => {
 
 router.post('/upload/', (req, res) => {
     upload(req, res, function (err) {
-        if (err instanceof multer.MulterError) {
+        if (err instanceof MulterError) {
             console.log(err);
             return res.status(500).json(err)
         } else if (err) {
@@ -34,9 +34,7 @@ router.post('/upload/', (req, res) => {
             return res.status(500).json(err)
         }
         console.log('file uploaded', req.file);
-
         return res.status(200).send({ status: 'success', file: req.file })
-
     })
 })
 
@@ -154,14 +152,14 @@ router.post('/addAadhaarData', (req, res) => {
     });
 });
 
-const pdfTemplate = require('../document/testTemplate')
+import pdfTemplate from '../document/testTemplate';
 
 // Development Only - Create PDF
 router.post('/devPdf', (req, res) => {
 
     let signature = 'Signature.jpeg';
-    pdf.create(pdfTemplate(signature), {
-        base: 'file://' + path.resolve('./public') + '/'
+    create(pdfTemplate(signature), {
+        base: 'file://' + resolve('./public') + '/'
     }).toFile(`document/saved/test.pdf`, (err) => {
         if (err) {
             console.log(err)
@@ -171,4 +169,4 @@ router.post('/devPdf', (req, res) => {
         }
     })
 })
-module.exports = router;
+export default router;

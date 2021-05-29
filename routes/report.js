@@ -1,256 +1,227 @@
-var express = require('express'),
-    router = express.Router(),
-    Report = require('../models/Report'),
-    twilio = require('twilio'),
-    config = require('../config/otp_config'),
-    client = twilio(config.accountSID, config.authToken),
-    User = require('../models/User');
+import { Router } from 'express';
+import twilio from 'twilio';
+import Report, { find, findById, findByIdAndUpdate } from '../models/Report';
+import { findById as _findById } from '../models/User';
+import { accountSID, authToken } from '../config/otp_config';
 
-const exec = require('child_process').exec;
+const client = twilio(accountSID, authToken);
+const router = Router();
 
 // Endpoint : '/reports/'
 
-
 // CREATE
-router.post('/', (req, res) => {
-    const { crime, answers, questions, user_id, media_files, signature, image_id } = req.body;
-    console.log('IPC', req.body.ipc);
-    var reportBody = new Report({
-        crime,
-        answers,
-        questions,
-        user_id,
-        media_files,
-        signature,
-        image_id,
-        status: 'Pending',
-        is_facilitator_filled: req.body.is_facilitator_filled ? true : false
-    });
-    console.log(reportBody);
-
-    reportBody.save()
-        .then((report) => {
-            if (reportBody.user_id === 'Not Available') {
-                res.send({ status: 'success', report: reportBody });
-                return
-            }
-            User.findById(reportBody.user_id)
-                .then((user) => {
-                    user.reports.push(report._id);
-                    user.save();
-                    res.send({ status: 'success', report: reportBody });
-                })
-                .catch((err) => {
-                    res.send({ status: 'error', msg: err })
-                })
-        })
-        .catch((err) => {
-            console.log(err);
-            res.send({ status: 'error', msg: 'Error saving REPORT' });
+router.post('/', async (req, res) => {
+    try {
+        const { crime, answers, questions, user_id, media_files, signature, image_id, is_facilitator_filled } = req.body;
+        const reportBody = new Report({
+            crime,
+            answers,
+            questions,
+            user_id,
+            media_files,
+            signature,
+            image_id,
+            status: 'Pending',
+            is_facilitator_filled: is_facilitator_filled ? true : false
         });
+        console.log(reportBody);
+        const report = await reportBody.save();
+        if (reportBody.user_id === 'Not Available') {
+            res.send({ status: 'success', report: reportBody });
+            return
+        }
+        const user = await _findById(reportBody.user_id)    
+        user.reports.push(report._id);
+        await user.save();
+        res.send({ status: 'success', report: reportBody });
+    } catch (error) {
+        res.send({ status: 'error', msg: error || 'Error saving REPORT' });
+    }
 });
 
 // READ
-router.get('/', (req, res) => {
-    Report.find({})
-        .then((reports) => {
-            res.send({ status: 'success', reports: reports });
-        })
-        .catch((error) => {
-            res.send({ status: 'error', msg: error });
-        });
+router.get('/', async (req, res) => {
+    try {
+        const reports = await find({})
+        res.send({ status: 'success', reports: reports });
+    } catch (error) {
+        res.send({ status: 'error', msg: error });        
+    }
 });
 
-router.get('/info/count', (req, res) => {
-    let approved = 0, pending = 0, rejected = 0;
-    let cb = 0, hp = 0, theft = 0, mur = 0, viol = 0, oth = 0;
-    Report.find({})
-        .then((reports) => {
-            reports.forEach(report => {
-
-                let status = report.status;
-                if (status.includes('Approved')) {
-                    approved += 1
-                } else if (status.includes('Rejected')) {
-                    rejected += 1
-                } else {
-                    pending += 1
-                }
-
-                let crime = report.crime;
-                if (crime === 'CYBER BULLYING') {
+router.get('/info/count', async (req, res) => {
+    try {
+        let approved = 0, pending = 0, rejected = 0;
+        let cb = 0, hp = 0, theft = 0, mur = 0, viol = 0, oth = 0;
+        const reports = await find({})
+        reports.forEach(report => {
+            const { status } = report;
+            if (status.includes('Approved')) {
+                approved += 1
+            } else if (status.includes('Rejected')) {
+                rejected += 1
+            } else {
+                pending += 1
+            }
+            const { crime } = report;
+            switch (crime) {
+                case 'CYBER BULLYING':
                     cb += 1
-                } else if (crime === 'HACKING OR PHISHING') {
+                    break;
+                case 'HACKING OR PHISHING':
                     hp += 1
-                } else if (crime === 'THEFT') {
+                    break
+                case 'THEFT':
                     theft += 1
-                } else if (crime === 'MURDER') {
+                    break
+                case 'MURDER':
                     mur += 1
-                } else if (crime === 'VIOLENCE') {
+                    break
+                case 'VIOLENCE':
                     viol += 1
-                } else if (crime === 'OTHER') {
+                    break
+                case 'OTHER':
                     oth += 1
-                }
-
-            })
-            res.send({
-                status: 'success', count: {
-                    cb, hp, theft, mur, viol, oth, approved, rejected, pending
-                }
-            })
+                    break
+            }
         })
-        .catch((error) => {
-            console.log(error);
-            res.send({ status: 'error' })
+        res.send({
+            status: 'success',
+            count: {
+                cb, hp, theft, mur, viol, oth, approved, rejected, pending
+            }
         })
+    } catch (error) {
+        res.send({ status: 'error' })
+        console.log(error);
+    }
 })
 
-router.get('/:id', (req, res) => {
-    Report.findById(req.params.id)
-        .then((report) => {
-            User.findById(report.user_id)
-                .then((user) => {
-                    res.send({ status: 'success', report: report, user: user });
-                })
-                .catch((error) => {
-                    res.send({ status: 'error', msg: error });
-                })
-        })
-        .catch((error) => {
-            res.send({ status: 'error', msg: error });
-        });
-});
-
-router.get('/user/:userId', (req, res) => {
-    let userId = req.params.userId;
-    if (!userId) {
-        res.render({ status: 'error', msg: 'UserId not given' });
-        return;
+router.get('/:id', async (req, res) => {
+    try {
+        const { params } = req;
+        const { id } = params;
+        const report = await findById(id)
+        const user = await _findById(report.user_id)            
+        res.send({ status: 'success', report, user });
+    } catch (error) {
+        res.send({ status: 'error', msg: error });
     }
-    User.findById(userId)
-        .then((user) => {
-            reports = user.reports;
-            var promises = reports.map(async (report) => {
-                const results = await report.findById(report)
-                    .then((report) => {
-                        return report;
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        res.send({ status: 'error', msg: error });
-                    });
-                return results;
-            });
-            Promise.all(promises).then(function (results) {
-                console.log('results', results);
-                res.send({ status: 'success', reports: results });
-            });
-        })
-        .catch((error) => {
-            console.log(error);
-            res.send({ status: 'error', msg: error });
-        });
 });
 
-router.get('/status/:status', (req, res) => {
-    Report.find({ status: req.params.status })
-        .then((reports) => {
-            res.send({ status: 'success', reports: reports });
-        })
-        .catch((error) => {
-            res.send({ status: 'error', msg: error });
+// needs further code review
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        if (!userId) {
+            res.render({ status: 'error', msg: 'UserId not given' });
+            return;
+        }
+        const user = await _findById(userId)
+        const { reports } = user;
+        const promises = reports.map(async (report) => {
+            const results = await report.findById(report)
+            .then((report) => {
+                return report;
+            })
+            return results;
         });
+        Promise.all(promises).then(function (results) {
+            console.log('results', results);
+            res.send({ status: 'success', reports: results });
+        });
+    } catch (error) {
+        console.log(error);
+        res.send({ status: 'error', msg: error });
+    }
+});
+    
+router.get('/status/:status', async (req, res) => {
+    try {
+        const { status } = req.params;
+        const reports = await find({ status })
+        res.send({ status: 'success', reports });
+    } catch (error) {
+        res.send({ status: 'error', msg: error });        
+    }
 });
 
 // UPDATE
-router.put('/work/:id/:vis', (req, res) => {
-    console.log(req.body.work);
-    Report.findById(req.params.id, (err, report) => {
-        if (err) {
-            res.send({ status: 'error', msg: 'DB error' })
-            console.log(err)
-            return;
-        }
-
-        if (req.params.vis === 'public')
-            report.work.push(req.body.work)
+router.put('/work/:id/:vis', async (req, res) => {
+    try {
+        const { id, vis } = req.params
+        const { work } = req.body
+        const report = await findById(id)
+        if (vis === 'public')
+            report.work.push(work)
         else
-            report.private_work.push(req.body.work)
-
-        report.save()
-            .then((response) => {
-                console.log('Saved work');
-                res.send({ status: 'success', report: report });
-            })
-            .catch((err) => {
-                console.log(err);
-                res.send({ status: 'error', msg: 'Saving error' })
-            })
-    });
+            report.private_work.push(work)
+        await report.save()
+        res.send({ status: 'success', report });
+    } catch (error) {
+        res.send({ status: 'error', msg: 'Saving error' })
+    }
 })
 
-router.put('/show_work/:id', (req, res) => {
-    Report.findByIdAndUpdate(req.params.id, { is_work_shown: true }, (err, report) => {
-        if (err) {
-            res.send({ status: 'error', msg: 'DB error' })
-            console.log(err)
-            return;
-        }
-        res.send({ status: 'success', report: report });
-    })
+router.put('/show_work/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const report = await findByIdAndUpdate(id, { is_work_shown: true })
+        res.send({ status: 'success', report });
+    } catch (error) {
+        res.send({ status: 'error', msg: error.msg })
+    }
 })
 
-router.put('/hide_work/:id', (req, res) => {
-    Report.findByIdAndUpdate(req.params.id, { is_work_shown: false }, (err, report) => {
-        if (err) {
-            res.send({ status: 'error', msg: 'DB error' })
-            console.log(err)
-            return;
-        }
-        res.send({ status: 'success', report: report });
-    })
+router.put('/hide_work/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const report = await findByIdAndUpdate(id, { is_work_shown: false })
+        res.send({ status: 'success', report });
+    } catch (error) {
+        res.send({ status: 'error', msg: error.msg })
+    }
 })
 
-router.put('/complete/:id', (req, res) => {
-    Report.findByIdAndUpdate(req.params.id, req.body, (err, report) => {
-        if (err) {
-            res.send({ status: 'error', msg: 'DB error' })
-            console.log(err)
-            return;
-        }
-        res.send({ status: 'success', report: report });
-    });
+router.put('/complete/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        const { body } = req
+        const report = await findByIdAndUpdate(id, body)
+        res.send({ status: 'success', report });
+    } catch (error) {
+        res.send({ status: 'error', msg: error || 'Error occurred' });
+    }
 })
 
-router.put('/:id', (req, res) => {
-    Report.findByIdAndUpdate(req.params.id, { status: req.body.status, reason: req.body.reason }, (err, report) => {
-        if (err) {
-            res.send({ status: 'error', msg: 'DB error' })
-            console.log(err)
-            return;
-        }
+router.put('/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        const { status, reason } = req.body
+        const report = await findByIdAndUpdate(id, { status, reason })
         res.send({ status: 'success', report: report });
-        console.log(req.body.reason);
         if (req.body.reason) {
             // Send text message for rejected
             client.messages
-                .create({
-                    body: `Your report has been rejected. Report id: ${report._id}, Reason: ${req.body.reason}. Please update the report details in order to proceed`,
-                    from: '+13015337570',
-                    to: '+917974961262'
-                })
-                .then(message => {
-                    console.log(message)
-                    console.log(message.sid)
-                })
-                .done((err) => {
-                    if (err)
-                        console.log(err);
-                    else
-                        console.log('SMS SENT FOR REJECTED');
-                });
+            .create({
+                body: `Your report has been rejected. Report id: ${report._id}, Reason: ${reason}. Please update the report details in order to proceed`,
+                from: '+13015337570',
+                to: '+917974961262'
+            })
+            .then(message => {
+                console.log(message)
+                console.log(message.sid)
+            })
+            .done((err) => {
+                if (err)
+                    console.log(err);
+                else
+                    console.log('SMS SENT FOR REJECTED');
+            });
         }
-    });
+    } catch (error) {
+        res.send({ status: 'error', msg: error });
+    }
 });
 
 // DELETE
@@ -258,4 +229,4 @@ router.delete('/:id', (req, res) => {
     res.send('Deleted for id', req.params.id);
 });
 
-module.exports = router;
+export default router;
