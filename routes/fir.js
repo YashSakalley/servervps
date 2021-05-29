@@ -1,9 +1,10 @@
-const express = require('express'),
-    router = express.Router(),
-    Fir = require('../models/Fir'),
-    pdf = require('html-pdf');
+import { Router } from 'express';
+import Fir from '../models/Fir';
+import pdf from 'html-pdf';
 
-const pdfTemplate = require('../document/index')
+import pdfTemplate from '../document/index';
+
+const router = Router();
 
 // Endpoint : '/firs/'
 
@@ -96,4 +97,5 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
     res.send('Deleted for id', req.params.id);
 });
-module.exports = router;
+
+export default router;

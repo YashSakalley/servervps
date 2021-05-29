@@ -1,10 +1,10 @@
-var express = require('express'),
-    router = express.Router(),
-    twilio = require('twilio'),
-    config = require('../config/otp_config'),
-    client = twilio(config.accountSID, config.authToken),
-    Aadhaar = require('../models/Aadhaar');
+import express from 'express';
+import twilio from 'twilio';
+import Aadhaar from '../models/Aadhaar';
+import config from '../config/otp_config';
+const client = twilio(config.accountSID, config.authToken);
 
+const router = express.Router();
 // Endpoint : '/verify/'
 
 

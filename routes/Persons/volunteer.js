@@ -1,6 +1,6 @@
 const express = require('express'),
     router = express.Router(),
-    Volunteer = require('../../models/volunteer'),
+    Volunteer = require('../../models/Volunteer'),
     FaciliRequest = require('../../models/FaciliRequest');
 
 // Endpoint : '/volunteer/'

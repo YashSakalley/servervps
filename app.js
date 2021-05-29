@@ -1,31 +1,34 @@
-var express = require('express'),
-    cors = require('cors'),
-    bodyParser = require('body-parser'),
-    mongoose = require('mongoose');
+import express, { json, urlencoded } from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import config from './config/db_config';
 
 // Routes
-var reportRouter = require('./routes/report'),
-    indexRouter = require('./routes/index'),
-    verifyRouter = require('./routes/verify'),
-    userRouter = require('./routes/Persons/user'),
-    voluteerRouter = require('./routes/Persons/volunteer'),
-    shoRouter = require('./routes/Persons/sho'),
-    ioRouter = require('./routes/Persons/io'),
-    spRouter = require('./routes/Persons/sp'),
-    legalRouter = require('./routes/Persons/legal'),
-    firRouter = require('./routes/fir'),
-    analyseRouter = require('./routes/analyse');
+import reportRouter from './routes/report';
+import indexRouter from './routes/index';
+import verifyRouter from './routes/verify';
+import userRouter from './routes/Persons/user';
+import voluteerRouter from './routes/Persons/volunteer';
+import shoRouter from './routes/Persons/sho';
+import ioRouter from './routes/Persons/io';
+import spRouter from './routes/Persons/sp';
+import legalRouter from './routes/Persons/legal';
+import firRouter from './routes/fir';
+import analyseRouter from './routes/analyse';
 
-const app = express(),
-    PORT = process.env.PORT || 5000;
+const app = express();
+const PORT = process.env.PORT || 5000;
+const { mongoURL } = config;
 
 // App setup
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 
 // Mongoose setup
-mongoose.connect("mongodb://localhost/vps",
+const DEV_URI = "mongodb://localhost/vps"
+console.log('uri', DEV_URI)
+mongoose.connect(DEV_URI,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -37,7 +40,6 @@ mongoose.connect("mongodb://localhost/vps",
     .catch((err) => {
         console.log("Error connecting to DB : ", err);
     })
-
 
 app.use('/firs', firRouter);
 app.use('/reports', reportRouter);
@@ -54,7 +56,6 @@ app.use('/volunteer', voluteerRouter);
 
 // Index Router
 app.use('/', indexRouter);
-
 
 app.listen(PORT, () => {
     console.log('Server listening on PORT:', PORT);
