@@ -19,6 +19,7 @@ import analyseRouter from './routes/analyse';
 const app = express();
 const PORT = process.env.PORT || 5000;
 const { mongoURL } = config;
+const DEV_URI = "mongodb://localhost/vps"
 
 // App setup
 app.use(cors());
@@ -26,8 +27,6 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 
 // Mongoose setup
-const DEV_URI = "mongodb://localhost/vps"
-console.log('uri', DEV_URI)
 mongoose.connect(DEV_URI,
     {
         useNewUrlParser: true,

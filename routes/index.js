@@ -133,23 +133,23 @@ router.post('/ipc', (req, res) => {
 })
 
 // Development Only - Create Aadhaar Data
-router.post('/addAadhaarData', (req, res) => {
-    var aadhaar = new Aadhaar({
-        phone: req.body.phone,
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        uid: req.body.uid,
-        father_name: req.body.father_name,
-        address: req.body.address
-    });
-
-    aadhaar.save((err, user) => {
-        if (err) {
-            res.send(err);
-        } else {
-            res.send('Document saved');
-        }
-    });
+router.post('/addAadhaarData', async (req, res) => {
+    try {
+        const { phone, first_name, last_name, uid, father_name, address } = req.body
+        const aadhaar = new Aadhaar({
+            phone,
+            first_name,
+            last_name,
+            uid,
+            father_name,
+            address
+        });
+        await aadhaar.save()
+        res.send('Document saved');
+    } catch (error) {
+        console.log(error)
+        res.send({ status: 'error', msg: error || 'Error occurred' });
+    }
 });
 
 import pdfTemplate from '../document/testTemplate';
@@ -169,4 +169,5 @@ router.post('/devPdf', (req, res) => {
         }
     })
 })
+
 export default router;
