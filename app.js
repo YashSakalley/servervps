@@ -4,17 +4,17 @@ import mongoose from 'mongoose';
 import config from './config/db_config';
 
 // Routes
-import reportRouter from './routes/report';
-import indexRouter from './routes/index';
-import verifyRouter from './routes/verify';
-import userRouter from './routes/Persons/user';
-import voluteerRouter from './routes/Persons/volunteer';
-import shoRouter from './routes/Persons/sho';
-import ioRouter from './routes/Persons/io';
-import spRouter from './routes/Persons/sp';
-import legalRouter from './routes/Persons/legal';
-import firRouter from './routes/fir';
-import analyseRouter from './routes/analyse';
+import reportRouter from './routes/report.route';
+import indexRouter from './routes/index.route';
+import verifyRouter from './routes/verify.route';
+import userRouter from './routes/Persons/user.route';
+import voluteerRouter from './routes/Persons/volunteer.route';
+import shoRouter from './routes/Persons/sho.route';
+import ioRouter from './routes/Persons/io.route';
+import spRouter from './routes/Persons/sp.route';
+import legalRouter from './routes/Persons/legal.route';
+import firRouter from './routes/fir.route';
+import analyseRouter from './routes/analyse.route';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
