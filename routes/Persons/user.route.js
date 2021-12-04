@@ -56,12 +56,14 @@ router.post('/withoutAadhaar', (req, res) => {
 });
 
 // READ
+
 // User's id in database is used as token
 router.post('/token', (req, res) => {
     let token = req.body.token;
-    User.findById(token, (err, user) => {
+    User.find({ id: token }, (err, user) => {
         if (err) {
             res.send({ status: 'error', msg: 'Error occurred' });
+            console.log(err);
         } else if (!user || user.length == 0) {
             res.send({ status: 'error', msg: 'No user found' });
         } else {

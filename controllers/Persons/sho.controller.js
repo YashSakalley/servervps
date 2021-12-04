@@ -1,4 +1,4 @@
-import Sho, { findOne } from '../../models/Sho';
+import Sho from '../../models/Sho';
 
 export const registerSho = async (req, res) => {
     try {
@@ -23,7 +23,7 @@ export const loginSho = async (req, res) => {
     try {
         const { body = {} } = req
         const { email, password, image_id } = body
-        const sho = findOne({ email })    
+        const sho = await Sho.findOne({ email })
         if (!sho || sho.length == 0) {
             res.send({ status: 'error', msg: 'NOUSER' });
         } else {
@@ -35,6 +35,7 @@ export const loginSho = async (req, res) => {
             }
         }
     } catch (error) {
+        console.log(error);
         res.send({ status: 'error', msg: 'DBERR' });
     }
 }

@@ -1,8 +1,6 @@
 import { Router } from 'express';
 import twilio from 'twilio';
-import Report, { find, findById, findByIdAndUpdate } from '../models/Report';
-import { findById as _findById } from '../models/User';
-import { accountSID, authToken } from '../config/otp_config';
+import Report from '../models/Report';
 import { 
     createReport,
     getAllReports,
@@ -13,7 +11,8 @@ import {
     updateReportWorkById
 } from '../controllers/report.controller';
 
-const client = twilio(accountSID, authToken);
+const { TWILLIO_ACCOUNT_SID, AUTH_TOKEN } = process.env
+const client = twilio(TWILLIO_ACCOUNT_SID, AUTH_TOKEN);
 const router = Router();
 
 // Endpoint : '/reports/'
@@ -38,7 +37,7 @@ router.put('/work/:id/:vis', updateReportWorkById)
 router.put('/show_work/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const report = await findByIdAndUpdate(id, { is_work_shown: true })
+        const report = await Report.findByIdAndUpdate(id, { is_work_shown: true })
         res.send({ status: 'success', report });
     } catch (error) {
         res.send({ status: 'error', msg: error.msg })
@@ -48,7 +47,7 @@ router.put('/show_work/:id', async (req, res) => {
 router.put('/hide_work/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const report = await findByIdAndUpdate(id, { is_work_shown: false })
+        const report = await Report.findByIdAndUpdate(id, { is_work_shown: false })
         res.send({ status: 'success', report });
     } catch (error) {
         res.send({ status: 'error', msg: error.msg })
@@ -59,7 +58,7 @@ router.put('/complete/:id', async (req, res) => {
     try {
         const { id } = req.params
         const { body } = req
-        const report = await findByIdAndUpdate(id, body)
+        const report = await Report.findByIdAndUpdate(id, body)
         res.send({ status: 'success', report });
     } catch (error) {
         res.send({ status: 'error', msg: error || 'Error occurred' });
@@ -70,26 +69,27 @@ router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params
         const { status, reason } = req.body
-        const report = await findByIdAndUpdate(id, { status, reason })
+        const report = await Report.findByIdAndUpdate(id, { status, reason })
         res.send({ status: 'success', report: report });
         if (req.body.reason) {
             // Send text message for rejected
-            client.messages
-            .create({
-                body: `Your report has been rejected. Report id: ${report._id}, Reason: ${reason}. Please update the report details in order to proceed`,
-                from: '+13015337570',
-                to: '+917974961262'
-            })
-            .then(message => {
-                console.log(message)
-                console.log(message.sid)
-            })
-            .done((err) => {
-                if (err)
-                    console.log(err);
-                else
-                    console.log('SMS SENT FOR REJECTED');
-            });
+            // twillio number not working currently
+            // client.messages
+            // .create({
+            //     body: `Your report has been rejected. Report id: ${report._id}, Reason: ${reason}. Please update the report details in order to proceed`,
+            //     from: '+13015337570',
+            //     to: '+917974961262'
+            // })
+            // .then(message => {
+            //     console.log(message)
+            //     console.log(message.sid)
+            // })
+            // .done((err) => {
+            //     if (err)
+            //         console.log(err);
+            //     else
+            //         console.log('SMS SENT FOR REJECTED');
+            // });
         }
     } catch (error) {
         res.send({ status: 'error', msg: error });

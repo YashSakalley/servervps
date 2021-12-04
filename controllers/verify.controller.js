@@ -1,8 +1,8 @@
 import twilio from 'twilio';
 import Aadhaar from '../models/Aadhaar';
-import config from '../config/otp_config';
 
-const client = twilio(config.accountSID, config.authToken);
+const { TWILLIO_ACCOUNT_SID, AUTH_TOKEN, TWILLIO_SERVICE_ID } = process.env
+const client = twilio(TWILLIO_ACCOUNT_SID, AUTH_TOKEN);
 
 export const sendOTP = async (req, res) => {
     try {
@@ -14,7 +14,7 @@ export const sendOTP = async (req, res) => {
             const { phone } = user;
             await client
             .verify
-            .services(config.serviceID)
+            .services(TWILLIO_SERVICE_ID)
             .verifications
             .create({
                 to: '+91' + phone,
@@ -34,7 +34,7 @@ export const verifyOTP = async (req, res) => {
         console.log(phone, otp);
         const value = await client
             .verify
-            .services(config.serviceID)
+            .services(TWILLIO_SERVICE_ID)
             .verificationChecks
             .create({
                 to: '+91' + phone,

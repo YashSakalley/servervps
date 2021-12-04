@@ -1,4 +1,4 @@
-import Io, { findOne } from '../../models/Io';
+import Io from '../../models/Io';
 
 export const registerIo = async (req, res) => {
     try {
@@ -23,7 +23,7 @@ export const loginIo = async (req, res) => {
     try {
         const { body = {} } = req
         const { email, password, image_id } = body
-        const io = findOne({ email })    
+        const io = await Io.findOne({ email })
         if (!io || io.length == 0) {
             res.send({ status: 'error', msg: 'NOUSER' });
         } else {

@@ -1,4 +1,4 @@
-import Sp, { findOne } from '../../models/Sp';
+import Sp from '../../models/Sp';
 
 export const registerSp = async (req, res) => {
     try {
@@ -15,7 +15,7 @@ export const registerSp = async (req, res) => {
         await sp.save()
         res.send({ status: 'success', user: sp });
     } catch (error) {
-        res.send({ status: 'error', msg: err });
+        res.send({ status: 'error', msg: error });
     }
 }
 
@@ -23,7 +23,7 @@ export const loginSp = async (req, res) => {
     try {
         const { body = {} } = req
         const { email, password, image_id } = body
-        const sp = findOne({ email })    
+        const sp = await Sp.findOne({ email })    
         if (!sp || sp.length == 0) {
             res.send({ status: 'error', msg: 'NOUSER' });
         } else {

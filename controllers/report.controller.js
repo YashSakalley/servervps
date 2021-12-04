@@ -1,3 +1,6 @@
+import Report from '../models/Report';
+import User from '../models/User';
+
 export const createReport = async (req, res) => {
     try {
         const { crime, answers, questions, user_id, media_files, signature, image_id, is_facilitator_filled } = req.body;
@@ -18,18 +21,19 @@ export const createReport = async (req, res) => {
             res.send({ status: 'success', report: reportBody });
             return
         }
-        const user = await _findById(reportBody.user_id)    
+        const user = await User.findById(reportBody.user_id)    
         user.reports.push(report._id);
         await user.save();
         res.send({ status: 'success', report: reportBody });
     } catch (error) {
+        console.log(error);
         res.send({ status: 'error', msg: error || 'Error saving REPORT' });
     }
 }
 
 export const getAllReports = async (req, res) => {
     try {
-        const reports = await find({})
+        const reports = await Report.find({})
         res.send({ status: 'success', reports });
     } catch (error) {
         res.send({ status: 'error', msg: error });        
@@ -40,7 +44,7 @@ export const getReportCount = async (req, res) => {
     try {
         let approved = 0, pending = 0, rejected = 0;
         let cb = 0, hp = 0, theft = 0, mur = 0, viol = 0, oth = 0;
-        const reports = await find({})
+        const reports = await Report.find({})
         reports.forEach(report => {
             const { status } = report;
             if (status.includes('Approved')) {
@@ -88,8 +92,9 @@ export const getReportById = async (req, res) => {
     try {
         const { params } = req;
         const { id } = params;
-        const report = await findById(id)
-        const user = await _findById(report.user_id)            
+        const report = await Report.findById(id)
+        const user = await User.findById(report.user_id)  
+        console.log('user', user);
         res.send({ status: 'success', report, user });
     } catch (error) {
         res.send({ status: 'error', msg: error });
@@ -104,7 +109,7 @@ export const getReportsByUserId = async (req, res) => {
             res.render({ status: 'error', msg: 'UserId not given' });
             return;
         }
-        const user = await _findById(userId)
+        const user = await User.findById(userId)
         const { reports } = user;
         const promises = reports.map(async (report) => {
             const results = await report.findById(report)
@@ -126,7 +131,7 @@ export const getReportsByUserId = async (req, res) => {
 export const getReportsByStatus = async (req, res) => {
     try {
         const { status } = req.params;
-        const reports = await find({ status })
+        const reports = await Report.find({ status })
         res.send({ status: 'success', reports });
     } catch (error) {
         res.send({ status: 'error', msg: error });        
@@ -137,7 +142,7 @@ export const updateReportWorkById = async (req, res) => {
     try {
         const { id, vis } = req.params
         const { work } = req.body
-        const report = await findById(id)
+        const report = await Report.findById(id)
         if (vis === 'public')
             report.work.push(work)
         else
@@ -148,4 +153,3 @@ export const updateReportWorkById = async (req, res) => {
         res.send({ status: 'error', msg: 'Saving error' })
     }
 }
-

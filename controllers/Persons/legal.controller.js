@@ -1,4 +1,4 @@
-import Legal, { findOne } from '../../models/Legal';
+import Legal from '../../models/Legal';
 
 export const registerLegal = async (req, res) => {
     try {
@@ -23,7 +23,7 @@ export const loginLegal = async (req, res) => {
     try {
         const { body = {} } = req
         const { email, password, image_id } = body
-        const legal = findOne({ email })    
+        const legal = await Legal.findOne({ email })    
         if (!legal || legal.length == 0) {
             res.send({ status: 'error', msg: 'NOUSER' });
         } else {
